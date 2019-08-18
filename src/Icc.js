@@ -46,7 +46,7 @@ class ICC extends React.Component{
     const isEmpty = inputValue === '';
     this.setState({
       interest_rate_year: inputValue,
-      interest_rate_month: (1+(inputValue/100))**(0.08333),
+      interest_rate_month: Math.round(((1+(inputValue/100))**(0.08333))*10000)/10000,
       hasInterestRateYearError: isEmpty,
     });
   }
@@ -78,6 +78,7 @@ class ICC extends React.Component{
     console.log(interestRateMonth.getValue());
     console.log(periodYear.getValue());
     
+
     return this.currentBalance;
   }
 
