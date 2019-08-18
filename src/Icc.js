@@ -12,6 +12,11 @@ class ICC extends React.Component{
       interest_rate_year: null,
       period_year: null,
       isSubmitted:false,
+      interest_rate_month: null,
+      asshole_final_balance: null,
+      simple_interest_balance: null,
+      compound_interest_balance: null,
+      compound_calculation_balance: null,
     };
   }
   
@@ -41,6 +46,7 @@ class ICC extends React.Component{
     const isEmpty = inputValue === '';
     this.setState({
       interest_rate_year: inputValue,
+      interest_rate_month: (1+(inputValue/100))**(0.08333),
       hasInterestRateYearError: isEmpty,
     });
   }
@@ -61,15 +67,17 @@ class ICC extends React.Component{
     let monthlyAddition = new bigDecimal(this.state.monthly_addition);
     let interestRateYear = new bigDecimal(this.state.interest_rate_year);
     let periodYear = new bigDecimal(this.state.period_year);
-    let interestRateMonth = (1+(interestRateYear.getValue()/100))**(0.08333);
+    let interestRateMonth = new bigDecimal(this.state.interest_rate_month);
 
-    console.log(this.state.current_balance);
+
+
+
     console.log(currentBalance.getValue());
     console.log(monthlyAddition.getValue());
     console.log(interestRateYear.getValue());
-    console.log(interestRateMonth);
+    console.log(interestRateMonth.getValue());
     console.log(periodYear.getValue());
-
+    
     return this.currentBalance;
   }
 
@@ -94,11 +102,11 @@ class ICC extends React.Component{
           <font size="5">  
             <div className="row mb-1">
               <div className="col-6 text-right">投資総額：</div>
-              <div className="col-6 text-left">{this.current_balance}万円</div>
+              <div className="col-6 text-left">{this.state.current_balance}万円</div>
             </div>
             <div className="row mb-1">
               <div className="col-6 text-right">最終金額：</div>
-              <div className="col-6 text-left"><font color="blue">{this.currentBalance}万円</font></div>
+              <div className="col-6 text-left"><font color="blue">{this.state.interest_rate_month}</font></div>
             </div>
             <div className="row mb-1">
               <div className="col-6 text-right">増加率　：</div>
