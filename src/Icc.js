@@ -56,19 +56,21 @@ class ICC extends React.Component{
   }
   /*複利計算処理*/
   calcCompaundLogic(){
+
     let currentBalance = new bigDecimal(this.state.current_balance);
     let monthlyAddition = new bigDecimal(this.state.monthly_addition);
     let interestRateYear = new bigDecimal(this.state.interest_rate_year);
     let periodYear = new bigDecimal(this.state.period_year);
+    let interestRateMonth = (1+(interestRateYear.getValue()/100))**(0.08333);
 
-    let interestRateMonth = (1+(interestRateYear/100))**(0.08333);
-
-    console.log(currentBalance);
-    console.log(monthlyAddition);
-    console.log(interestRateYear);
+    console.log(this.state.current_balance);
+    console.log(currentBalance.getValue());
+    console.log(monthlyAddition.getValue());
+    console.log(interestRateYear.getValue());
     console.log(interestRateMonth);
-    console.log(periodYear);
-    return currentBalance;
+    console.log(periodYear.getValue());
+
+    return this.currentBalance;
   }
 
 
@@ -85,6 +87,7 @@ class ICC extends React.Component{
   render(){
     let displayResult;
     let displayGraphChart;
+
     if(this.state.isSubmitted){
       displayResult =(
         <div className="col shadow py-3 mb-3 mt-4 rounded">
