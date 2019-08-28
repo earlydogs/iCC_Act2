@@ -1,4 +1,5 @@
 import React from 'react';
+
 var bigDecimal = require('js-big-decimal');
 
 
@@ -17,14 +18,7 @@ class ICC extends React.Component{
       simpleFinalBalance: null,                                      /* 単利 　　　最終金額 */
       compoundFinalBalance: null,                                    /* 複利 　　　最終金額 */
       rateOfIncrease: null,                                          /* 利益率 */
-      recharts:[
-        {
-          year: null,
-          tanri: null,
-          fukuri: null,
-          chokin: null,
-        }
-      ],
+      recharts:[],
     };
   }
   
@@ -90,13 +84,11 @@ class ICC extends React.Component{
     fukuriKingaku.push(ganpon.getValue());
     compoundCalculationBalance.push(ganpon.getValue());
 
-    this.setState({
-      recharts:[{
-        year: 0,
-        tanri: ganpon.getValue(),
-        fukuri: ganpon.getValue(),
-        chokin: ganpon.getValue(),
-      }]
+    this.state.recharts.push({
+      year: 0,
+      tanri: ganpon.getValue(),
+      fukuri: ganpon.getValue(),
+      chokin: ganpon.getValue(),
     });
     /*
     console.log(ganpon.getValue());
@@ -133,6 +125,13 @@ class ICC extends React.Component{
         console.log(`タンス預金：${tansuYokin[countYear].getPrettyValue()}万円`);
         console.log(`単利　　　：${tanriKingaku[countYear].getPrettyValue()}万円`);
         console.log(`複利　　　：${fukuriKingaku[countYear].getPrettyValue()}万円`);
+        this.state.recharts.push({
+          year: countYear,
+          tanri: tanriKingaku[countYear].getValue(),
+          fukuri: fukuriKingaku[countYear].getValue(),
+          chokin: tansuYokin[countYear].getValue(),
+        });
+        console.log(this.state.recharts[countYear]);
       }
     }
     const riekiritsu = Math.round((fukuriKingaku[countYear].getValue()/tansuYokin[countYear].getValue()*100)*10)/10;
@@ -183,6 +182,8 @@ class ICC extends React.Component{
           <div className="container-fluid">
             <div className="col mb-4 shadow mt-2 pt-2 pb-4 rounded">
               ここにグラフが出る
+              
+              
             </div>
             <div className="col mb-4 shadow mt-2 pt-2 pb-4 rounded">
               ここに表テーブルが出る
