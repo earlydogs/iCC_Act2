@@ -16,6 +16,15 @@ class ICC extends React.Component{
       assholeFinalBalance: null,                                     /* タンス預金 最終金額 */
       simpleFinalBalance: null,                                      /* 単利 　　　最終金額 */
       compoundFinalBalance: null,                                    /* 複利 　　　最終金額 */
+      rateOfIncrease: null,                                          /* 利益率 */
+      recharts:[
+        {
+          year: null,
+          tanri: null,
+          fukuri: null,
+          chokin: null,
+        }
+      ],
     };
   }
   
@@ -81,6 +90,14 @@ class ICC extends React.Component{
     fukuriKingaku.push(ganpon.getValue());
     compoundCalculationBalance.push(ganpon.getValue());
 
+    this.setState({
+      recharts:[{
+        year: 0,
+        tanri: ganpon.getValue(),
+        fukuri: ganpon.getValue(),
+        chokin: ganpon.getValue(),
+      }]
+    });
     /*
     console.log(ganpon.getValue());
     console.log(tsumitate.getValue());
@@ -89,46 +106,42 @@ class ICC extends React.Component{
     console.log(getsuri.getValue());
     */
 
-    /* 単利計算 */
-    let countSimple = 1;
-    for (countSimple; countSimple <= toushiKikan.getValue(); countSimple++) {
-      const sumSoukin = new bigDecimal(tsumitate.getValue()*12*countSimple)
-      tansuYokin[countSimple] = ganpon.add(sumSoukin);
 
-      let simpleKinri = new bigDecimal(countSimple*ganpon.getValue()*nenri.getValue());
-      tanriKingaku[countSimple] = ganpon.add(sumSoukin.add(simpleKinri));
-      console.log(`${countSimple}年目`);
-      console.log(`タンス預金：${tansuYokin[countSimple].getPrettyValue()}万円`);
-      console.log(`単利　　　：${tanriKingaku[countSimple].getPrettyValue()}万円`);
-    }
-
-    /* 複利計算 */
+    /* メイン計算処理 */
     const timeMonth = new bigDecimal('12');
     let maxCount = toushiKikan.multiply(timeMonth);
-    let fukuriTimes = 0;
-    for (let countCompound = 1; countCompound <= maxCount.getValue(); countCompound++) {
-      console.log(`${countCompound}ヶ月目`);
-      console.log(`前月：${compoundCalculationBalance[countCompound-1]}万円`);
-
-      const zengetsuKingaku = new bigDecimal(compoundCalculationBalance[countCompound-1]);
+    let countYear = 0;
+    /* 月次計算 */
+    for (let countMonth = 1; countMonth <= maxCount.getValue(); countMonth++) {
+      const zengetsuKingaku = new bigDecimal(compoundCalculationBalance[countMonth-1]);
       const zengetsuKingakuCalc = getsuri.multiply(zengetsuKingaku.add(tsumitate));
-      compoundCalculationBalance[countCompound] = Math.ceil(zengetsuKingakuCalc.getValue()*1000)/1000;
+      compoundCalculationBalance[countMonth] = Math.ceil(zengetsuKingakuCalc.getValue()*1000)/1000;
 
-      console.log(zengetsuKingaku);
-      console.log(zengetsuKingakuCalc);
-      console.log(compoundCalculationBalance[countCompound]);
-
-      if(countCompound % 12 === 0){
-        fukuriTimes ++;
-        fukuriKingaku[fukuriTimes] = Math.ceil(compoundCalculationBalance[countCompound]*10)/10;
-        console.log(`${countCompound}だよお`);
-        console.log(fukuriKingaku[fukuriTimes]);
+      /* 年次計算 */
+      if(countMonth % 12 === 0){
+        countYear ++;
+        /* タンス預金計算 */
+        const sumSoukin = new bigDecimal(tsumitate.getValue()*12*countYear);
+        tansuYokin[countYear] = ganpon.add(sumSoukin);
+        /* 単利計算 */
+        let simpleKinri = new bigDecimal(countYear*ganpon.getValue()*nenri.getValue());
+        tanriKingaku[countYear] = ganpon.add(sumSoukin.add(simpleKinri));
+        /* 複利計算 */
+        const fukuriKingakuRow = Math.ceil(compoundCalculationBalance[countMonth]*10)/10;
+        fukuriKingaku[countYear] = new bigDecimal(fukuriKingakuRow);
+        console.log(`${countYear}年目`);
+        console.log(`タンス預金：${tansuYokin[countYear].getPrettyValue()}万円`);
+        console.log(`単利　　　：${tanriKingaku[countYear].getPrettyValue()}万円`);
+        console.log(`複利　　　：${fukuriKingaku[countYear].getPrettyValue()}万円`);
       }
-
-
     }
-    console.log(countSimple);
-    console.log(fukuriTimes);    
+    const riekiritsu = Math.round((fukuriKingaku[countYear].getValue()/tansuYokin[countYear].getValue()*100)*10)/10;
+    this.setState({
+      assholeFinalBalance: tansuYokin[countYear].getPrettyValue(),
+      compoundFinalBalance: fukuriKingaku[countYear].getPrettyValue(),
+      rateOfIncrease: riekiritsu,
+    });
+   
   }
 
 
@@ -152,15 +165,15 @@ class ICC extends React.Component{
           <font size="5">  
             <div className="row mb-1">
               <div className="col-6 text-right">投資総額：</div>
-              <div className="col-6 text-left">{this.state.currentBalance}万円</div>
+              <div className="col-6 text-left">{this.state.assholeFinalBalance}万円</div>
             </div>
             <div className="row mb-1">
               <div className="col-6 text-right">最終金額：</div>
-              <div className="col-6 text-left"><font color="blue">{this.state.interestRateMonth}</font></div>
+              <div className="col-6 text-left"><font color="blue">{this.state.compoundFinalBalance}万円</font></div>
             </div>
             <div className="row mb-1">
               <div className="col-6 text-right">増加率　：</div>
-              <div className="col-6 text-left"><font color="blue">％</font></div>
+              <div className="col-6 text-left"><font color="blue">{this.state.rateOfIncrease}％</font></div>
             </div>
           </font>
         </div>
