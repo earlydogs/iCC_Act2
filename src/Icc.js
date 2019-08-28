@@ -123,9 +123,6 @@ class ICC extends React.Component{
         fukuriKingaku[fukuriTimes] = Math.ceil(compoundCalculationBalance[countCompound]*10)/10;
         console.log(`${countCompound}だよお`);
         console.log(fukuriKingaku[fukuriTimes]);
-        
-        
-
       }
 
 
